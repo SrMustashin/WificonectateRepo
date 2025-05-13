@@ -1,7 +1,8 @@
-from flask import Flask
+import pymysql
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hola, mundo"
+    return render_template("index.html")
