@@ -2,19 +2,74 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Leer Excel</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Registro de Pagos - iWisp</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
 </head>
-<body class="container mt-5">
-    <h1>Subir archivo Excel</h1>
-    <form method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".xlsx" class="form-control mb-3" required>
-        <button type="submit" class="btn btn-primary">Subir</button>
-    </form>
-    <div class="mt-4">
-        {% if data %}
-            {{ data|safe }}
-        {% endif %}
-    </div>
+<body>
+
+<h1>Subir archivo Excel para registrar pagos</h1>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".xlsx" required>
+    <button type="submit">Subir</button>
+</form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>
+    {% for message in messages %}
+      <li class="error">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{% if preview %}
+    <h2>Vista previa del archivo:</h2>
+    <table>
+        <tr>
+            <th>ID Cliente</th>
+            <th>Teléfono</th>
+            <th>Transacción</th>
+            <th>Monto</th>
+            <th>Fecha de Pago</th>
+        </tr>
+        {% for row in preview %}
+        <tr>
+            <td>{{ row.idcliente }}</td>
+            <td>{{ row.telefono }}</td>
+            <td>{{ row.transaccion }}</td>
+            <td>{{ row.monto }}</td>
+            <td>{{ row.fecha_pago }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% if resultados %}
+    <h2>Resultado de la actualización en iWisp</h2>
+    <table>
+        <tr>
+            <th>ID Cliente</th>
+            <th>Status</th>
+            <th>Mensaje</th>
+        </tr>
+        {% for res in resultados %}
+        <tr>
+            <td>{{ res.idcliente }}</td>
+            <td class="{{ 'success' if res.status == 200 else 'error' }}">{{ res.status }}</td>
+            <td>{{ res.mensaje }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
 </body>
 </html>
